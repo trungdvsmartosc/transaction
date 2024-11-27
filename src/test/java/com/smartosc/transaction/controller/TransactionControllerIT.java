@@ -1,11 +1,12 @@
 package com.smartosc.transaction.controller;
 
+import com.smartosc.transaction.base.TestBase;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 
-@SpringBootTest
 @Slf4j
+@Import(TestBase.class)
 public class TransactionControllerIT {
 
     @Test

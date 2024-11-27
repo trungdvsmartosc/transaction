@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -40,4 +41,18 @@ public class Account {
 
     private Instant createdAt;
     private Instant modifiedAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return Double.compare(balance, account.balance) == 0 &&
+                status == account.status &&
+                Objects.equals(id, account.id) &&
+                Objects.equals(username, account.username) &&
+                Objects.equals(password, account.password) &&
+                Objects.equals(email, account.email) &&
+                Objects.equals(number, account.number);
+    }
 }

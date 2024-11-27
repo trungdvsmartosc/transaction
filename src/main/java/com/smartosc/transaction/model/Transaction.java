@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -20,12 +21,12 @@ public class Transaction {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "sender_account_id", nullable = false)
-    private Account senderAccount;
+    @JoinColumn(name = "sender_id", nullable = false)
+    private Account sender;
 
     @ManyToOne
-    @JoinColumn(name = "receiver_account_id", nullable = false)
-    private Account receiverAccount;
+    @JoinColumn(name = "receiver_id", nullable = false)
+    private Account receiver;
 
     @Column(nullable = false)
     private double amount;
