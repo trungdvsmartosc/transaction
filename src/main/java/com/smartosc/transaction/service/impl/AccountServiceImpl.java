@@ -19,6 +19,7 @@ public class AccountServiceImpl implements AccountService {
     public List<Account> createAccounts(final List<Account> accounts) {
         final var currentTime = Instant.now();
         accounts.forEach(it -> {
+            it.setBalance(0);
             it.setCreatedAt(currentTime);
             it.setModifiedAt(currentTime);
             it.setStatus(false);

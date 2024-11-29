@@ -39,7 +39,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Transactional
     Transaction transactionProcessor(TransactionRequest transactionRequest, Long senderAccountId, Long receiverAccountId) {
-        Account senderAccountSaved = withdraw(senderAccountId, transactionRequest.getAmount());
+        Account senderAccountSaved = withdrawal(senderAccountId, transactionRequest.getAmount());
         Account receiverAccountSaved = deposit(receiverAccountId, transactionRequest.getAmount());
         Transaction transaction = buildTransaction(transactionRequest, senderAccountSaved, receiverAccountSaved);
         return transactionRepository.save(transaction);
@@ -62,13 +62,14 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setSender(senderAccount);
         transaction.setReceiver(receiverAccount);
         transaction.setAmount(transactionRequest.getAmount());
-        transaction.setDescription(transactionRequest.getDescription());
+        transaction.setRemarks(transactionRequest.getRemarks());
         transaction.setStatus(Transaction.STATUS.PROCESSING);
         transaction.setTransactionDate(currentTime);
+        transaction.setType(transactionRequest.getType());
         return transaction;
     }
 
-    public Account withdraw(Long id, double amount) {
+    public Account withdrawal(Long id, double amount) {
         final Account account = accountRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Account with id " + id + " does not exist"));
         final double newBalance = account.getBalance() - amount;
         if (newBalance < 0) {

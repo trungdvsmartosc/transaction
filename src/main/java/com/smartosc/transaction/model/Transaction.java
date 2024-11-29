@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -33,7 +32,10 @@ public class Transaction {
 
     @Column(length = 50)
     private String status;
-    private String description;
+
+    @Column(length = 50)
+    private String type;
+    private String remarks;
     private Instant transactionDate;
 
 
@@ -44,5 +46,14 @@ public class Transaction {
         public final static String SUCCESS = "success";
         public final static String FAILED = "failed";
         public final static String PROCESSING = "processing";
+    }
+
+    public static class TYPE {
+        private TYPE() {
+        }
+
+        public final static String DEPOSIT = "deposit";
+        public final static String WITHDRAWAL = "withdrawal";
+        public final static String TRANSFER = "transfer";
     }
 }

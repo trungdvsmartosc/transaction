@@ -24,5 +24,6 @@ public class TransactionRequest {
     @Column(nullable = false)
     private double amount;
 
-    private String description;
+    private String type;
+    private String remarks;
 }

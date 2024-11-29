@@ -21,9 +21,8 @@ import java.util.Optional;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
-@Import({TestBase.class, TransactionServiceImpl.class})
+@Import({TestBase.class})
 class TransactionServiceIT {
 
 
@@ -51,10 +50,10 @@ class TransactionServiceIT {
         return account;
     }
 
-    @BeforeEach
-    void init() {
-        MockitoAnnotations.openMocks(this);
-    }
+        @BeforeEach
+        void init() {
+            MockitoAnnotations.openMocks(this);
+        }
 
 
     @Test
@@ -65,7 +64,7 @@ class TransactionServiceIT {
         transaction_1.setReceiver(getReceiverAccount());
         transaction_1.setAmount(10L);
         transaction_1.setStatus(Transaction.STATUS.PROCESSING);
-        transaction_1.setDescription("transaction 1");
+        transaction_1.setRemarks("transaction 1");
         transaction_1.setTransactionDate(Instant.now());
 
         Transaction transaction_2 = new Transaction();
@@ -74,7 +73,7 @@ class TransactionServiceIT {
         transaction_2.setReceiver(new Account());
         transaction_2.setAmount(20L);
         transaction_2.setStatus(Transaction.STATUS.PROCESSING);
-        transaction_2.setDescription("transaction 2");
+        transaction_2.setRemarks("transaction 2");
         transaction_2.setTransactionDate(Instant.now());
 
         List<Transaction> transactions = List.of(transaction_1, transaction_2);
@@ -104,20 +103,20 @@ class TransactionServiceIT {
         transactionRequest.setSenderId(1L);
         transactionRequest.setReceiverId(1L);
         transactionRequest.setAmount(100.5);
-        transactionRequest.setDescription("Test build transaction");
+        transactionRequest.setRemarks("Test build transaction");
         Transaction transaction = transactionService.buildTransaction(transactionRequest, getSenderAccount(), getReceiverAccount());
 
         assert transaction.getSender().equals(getSenderAccount());
         assertEquals(transaction.getReceiver(), getReceiverAccount());
         assertEquals(transaction.getStatus(), Transaction.STATUS.PROCESSING);
         assertEquals(transaction.getAmount(), transactionRequest.getAmount());
-        assertEquals(transaction.getDescription(), transactionRequest.getDescription());
+        assertEquals(transaction.getRemarks(), transactionRequest.getRemarks());
     }
 
 
     @Test
     void testCreateTransaction_AccountDoesNotExist() {
-        RuntimeException exception1 = assertThrows(RuntimeException.class, () -> transactionService.withdraw(1L, 10.5));
+        RuntimeException exception1 = assertThrows(RuntimeException.class, () -> transactionService.withdrawal(1L, 10.5));
         assertEquals("Account with id 1 does not exist", exception1.getMessage());
 
         RuntimeException exception2 = assertThrows(RuntimeException.class, () -> transactionService.deposit(2L, 10.5));
@@ -148,7 +147,7 @@ class TransactionServiceIT {
         when(accountRepository.findById(1L)).thenReturn(Optional.of(getSenderAccount()));
         when(accountRepository.findById(2L)).thenReturn(Optional.of(getReceiverAccount()));
 
-        when(transactionService.withdraw(1L, amount)).thenReturn(sender);
+        when(transactionService.withdrawal(1L, amount)).thenReturn(sender);
         when(transactionService.deposit(2L, amount)).thenReturn(receiver);
 
         when(transactionRepository.save(any(Transaction.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -158,7 +157,7 @@ class TransactionServiceIT {
         assert transaction != null;
         assert transaction.getAmount() == amount;
         assert transaction.getStatus().equals(Transaction.STATUS.PROCESSING);
-        assert transaction.getDescription().equals(testSuccessMsg);
+        assert transaction.getRemarks().equals(testSuccessMsg);
 
         assert transaction.getSender() != null;
         assert Objects.equals(transaction.getSender().getId(), getSenderAccount().getId());
@@ -175,7 +174,7 @@ class TransactionServiceIT {
         final double amount = 10000;
         when(accountRepository.findById(userId)).thenReturn(Optional.of(getSenderAccount()));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> transactionService.withdraw(userId, amount));
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> transactionService.withdrawal(userId, amount));
         assertEquals("Insufficient balance", exception.getMessage());
     }
 
@@ -185,7 +184,7 @@ class TransactionServiceIT {
         final double amount = 10;
         when(accountRepository.findById(userId)).thenReturn(Optional.of(getSenderAccount()));
         when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        Account sender = transactionService.withdraw(userId, amount);
+        Account sender = transactionService.withdrawal(userId, amount);
 
         assertNotNull(sender);
         assertThat(sender).extracting(Account::getBalance).isEqualTo(getSenderAccount().getBalance() - amount);
